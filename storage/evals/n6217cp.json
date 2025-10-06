@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "構成・テンポ",
+    "confidence": 5,
+    "score": 7,
+    "maxScore": 10,
+    "reason": "物語のテンポがやや緩慢で、特に導入部が長く感じる部分がある。"
+  },
+  {
+    "id": 2,
+    "name": "キャラクター",
+    "confidence": 5,
+    "score": 8,
+    "maxScore": 10,
+    "reason": "一部のキャラクターの掘り下げが不十分で、感情移入が難しい。"
+  },
+  {
+    "id": 3,
+    "name": "文章力",
+    "confidence": 1,
+    "score": 7,
+    "maxScore": 10,
+    "reason": "専門用語や複雑な設定が多く、読み手によっては理解しづらい場合がある。"
+  },
+  {
+    "id": 4,
+    "name": "世界観・設定",
+    "confidence": 6,
+    "score": 9,
+    "maxScore": 10,
+    "reason": "独自の宇宙観と設定が魅力的である。"
+  },
+  {
+    "id": 5,
+    "name": "ターゲット適合度",
+    "confidence": 5,
+    "score": 8,
+    "maxScore": 10,
+    "reason": "キャラクターたちの多様性が読者の共感を呼ぶ。"
+  }
+]

@@ -72,10 +72,10 @@ export default function EvaluationPage() {
         setTotalScore(total)
         console.log(evals, total)
       } else {
-        alert("Evaluation failed")
+        alert("評価に失敗しました")
       }
     } catch (err) {
-      alert("Evaluation failed")
+      alert("評価に失敗しました")
       console.log(err)
     }
 
@@ -143,32 +143,32 @@ export default function EvaluationPage() {
     fetchNovels()
   }, [])
 
-  useEffect(() => {
-    const fetchEvalData = async () => {
-      if (!selectedNovel) return
+  // useEffect(() => {
+  //   const fetchEvalData = async () => {
+  //     if (!selectedNovel) return
 
-      try {
-        const res = await fetch(`/api/evals/${selectedNovel}`)
-        const json = await res.json()
+  //     try {
+  //       const res = await fetch(`/api/evals/${selectedNovel}`)
+  //       const json = await res.json()
 
-        if (json.success && json.data) {
-          const parsed = convertJSONToEvals(json.data)
-          setEvaluationResults(parsed)
-          // Optionally set total score, etc.
-          const total = parsed.reduce((sum, result) => sum + result.score, 0)
-          setTotalScore(total)
-        } else {
-          console.warn("No evaluation found for selected work.")
-          setEvaluationResults(null)
-        }
-      } catch (err) {
-        console.error("Error loading evaluation:", err)
-        setEvaluationResults(null)
-      }
-    }
+  //       if (json.success && json.data) {
+  //         const parsed = convertJSONToEvals(json.data)
+  //         setEvaluationResults(parsed)
+  //         // Optionally set total score, etc.
+  //         const total = parsed.reduce((sum, result) => sum + result.score, 0)
+  //         setTotalScore(total)
+  //       } else {
+  //         console.warn("No evaluation found for selected work.")
+  //         setEvaluationResults(null)
+  //       }
+  //     } catch (err) {
+  //       console.error("Error loading evaluation:", err)
+  //       setEvaluationResults(null)
+  //     }
+  //   }
 
-    fetchEvalData()
-  }, [selectedNovel])
+  //   fetchEvalData()
+  // }, [selectedNovel])
 
   return (
     <MainLayout>

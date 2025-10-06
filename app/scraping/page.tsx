@@ -48,7 +48,7 @@ export default function ScrapingPage() {
       : "unknown";
 
     if (source === 'unknown') {
-      alert("Unknown source!")
+      alert("対応していないウェブサイトです")
       setIsLoading(false)
       return
     }
@@ -75,7 +75,7 @@ export default function ScrapingPage() {
         setScrapedData(toNovelData(json.data))
         setWorkId(workId)
       } else {
-        alert("Scrap failed!")
+        alert("小説のスクレイピングに失敗しました")
       }
 
     } catch (err) {
