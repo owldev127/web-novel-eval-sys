@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "構成・テンポ",
+    "confidence": 10,
+    "score": 6,
+    "maxScore": 10,
+    "reason": "会話劇が中心で状況描写が不足"
+  },
+  {
+    "id": 2,
+    "name": "キャラクター",
+    "confidence": 4,
+    "score": 7,
+    "maxScore": 10,
+    "reason": "専門用語の説明不足"
+  },
+  {
+    "id": 3,
+    "name": "文章力",
+    "confidence": 7,
+    "score": 6,
+    "maxScore": 10,
+    "reason": "序盤のため、主人公の目的や物語の方向性が不明瞭"
+  },
+  {
+    "id": 4,
+    "name": "世界観・設定",
+    "confidence": 6,
+    "score": 8,
+    "maxScore": 10,
+    "reason": "緊迫感のある状況設定"
+  },
+  {
+    "id": 5,
+    "name": "ターゲット適合度",
+    "confidence": 6,
+    "score": 6,
+    "maxScore": 10,
+    "reason": "謎めいたファイルの存在"
+  }
+]
