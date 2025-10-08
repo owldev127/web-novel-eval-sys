@@ -1,0 +1,37 @@
+{
+  "workId": "n6217cp",
+  "workTitle": "ワンダー７",
+  "author": "二月三月",
+  "stage": "second",
+  "evaluationStage": "第二段階",
+  "evaluationDate": "2025-10-08",
+  "totalScore": 20,
+  "isPassed": true,
+  "maxScore": 30,
+  "details": [
+    {
+      "id": 1,
+      "name": "独創性",
+      "confidence": 8,
+      "score": 8,
+      "maxScore": 10,
+      "reason": "１話のみの評価のため、世界観やテーマ性の深掘りは不明。"
+    },
+    {
+      "id": 2,
+      "name": "世界観",
+      "confidence": 10,
+      "score": 7,
+      "maxScore": 10,
+      "reason": "情報の統制という設定は面白いが、やや説明的な部分が見られる。"
+    },
+    {
+      "id": 3,
+      "name": "テーマ性",
+      "confidence": 7,
+      "score": 5,
+      "maxScore": 10,
+      "reason": "キャラクターの個性がまだ見えにくく、今後の描写に期待。"
+    }
+  ]
+}

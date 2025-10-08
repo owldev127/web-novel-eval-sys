@@ -32,13 +32,45 @@ export async function GET(
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { evals, workId, selectedStage } = body
+    const {
+      evals,
+      workId,
+      workTitle,
+      author,
+      stage,
+      stageLabel,
+      totalScore,
+      passingScore,
+    } = body
 
-    const fileName = `${workId}_${selectedStage}.json`
+    const maxScore = evals.reduce(
+      (sum: number, item: any) => sum + item.maxScore,
+      0
+    )
+
+    // Create enhanced evaluation data with additional fields
+    const enhancedEvalData = {
+      workId: workId,
+      workTitle,
+      author: author,
+      stage: stage,
+      evaluationStage: stageLabel,
+      evaluationDate: new Date().toISOString().split("T")[0],
+      totalScore,
+      isPassed: totalScore >= passingScore,
+      maxScore,
+      details: evals,
+    }
+
+    const fileName = `${workId}_${stage}.json`
     const savePath = path.join(EVALS_DIR, fileName)
 
     await fs.mkdir(EVALS_DIR, { recursive: true })
-    await fs.writeFile(savePath, JSON.stringify(evals, null, 2), "utf-8")
+    await fs.writeFile(
+      savePath,
+      JSON.stringify(enhancedEvalData, null, 2),
+      "utf-8"
+    )
 
     return NextResponse.json({ success: true })
   } catch (err) {

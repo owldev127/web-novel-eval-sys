@@ -1,0 +1,37 @@
+{
+  "workId": "n1107ku",
+  "workTitle": "SHIRASE　捕食者を狩るもの",
+  "author": "aizawa kei",
+  "stage": "first",
+  "evaluationStage": "第一段階",
+  "evaluationDate": "2025-10-08",
+  "totalScore": 21,
+  "isPassed": true,
+  "maxScore": 30,
+  "details": [
+    {
+      "id": 1,
+      "name": "構成・プロット",
+      "confidence": 2,
+      "score": 7,
+      "maxScore": 10,
+      "reason": "キャラクターの深みが不足"
+    },
+    {
+      "id": 2,
+      "name": "キャラクター",
+      "confidence": 7,
+      "score": 6,
+      "maxScore": 10,
+      "reason": "プロットの展開がやや平坦"
+    },
+    {
+      "id": 3,
+      "name": "文章力",
+      "confidence": 10,
+      "score": 8,
+      "maxScore": 10,
+      "reason": "対話の自然さに欠ける部分がある"
+    }
+  ]
+}

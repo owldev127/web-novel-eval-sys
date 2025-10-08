@@ -118,15 +118,24 @@ export default function EvaluationPage() {
 
   const handleSaveResults = async () => {
     try {
+      // Get the selected novel data to extract title and author
+      const selectedNovelData = novels.find(
+        (novel) => novel.id === selectedNovel
+      )
+
       const res = await fetch(`/api/evals/${selectedNovel}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           evals: evaluationResults,
           workId: selectedNovel,
+          workTitle: selectedNovelData?.title || "",
+          author: selectedNovelData?.author || "",
           stage: selectedStage,
           stageLabel: evaluationStages.find((o) => o.value === selectedStage)
             ?.label,
+          totalScore,
+          passingScore,
         }),
       })
 
