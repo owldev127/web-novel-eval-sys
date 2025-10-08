@@ -105,7 +105,6 @@ export default function EvaluationPage() {
         setEvaluationResults(evals)
         const total = evals.reduce((sum, result) => sum + result.score, 0)
         setTotalScore(total)
-        console.log(evals, total)
       } else {
         alert("評価に失敗しました")
       }
@@ -125,6 +124,9 @@ export default function EvaluationPage() {
         body: JSON.stringify({
           evals: evaluationResults,
           workId: selectedNovel,
+          stage: selectedStage,
+          stageLabel: evaluationStages.find((o) => o.value === selectedStage)
+            ?.label,
         }),
       })
 

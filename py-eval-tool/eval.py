@@ -442,7 +442,7 @@ async def run_evaluation(agent: str, work_id: str, episodes: int, stage_num:str)
     criteria_text = "\n\n".join(criteria_lines)
 
     # --- build dynamic "scores" JSON keys ---
-    scores_lines = [f'    "criteria{c["id"]}": 数値 (評価基準{c['id']}についての評価)' for c in stage_data.get('criteria', [])]
+    scores_lines = [f'    "{c["name"]}": 数値 (評価基準{c['id']}についての評価)' for c in stage_data.get('criteria', [])]
     scores_text = ",\n".join(scores_lines)
 
 
@@ -455,12 +455,12 @@ async def run_evaluation(agent: str, work_id: str, episodes: int, stage_num:str)
             messages = [{"role": "user", "content": prompt}]
             eval_result = await LLMAgent(agent).call(messages)    
         payload = extract_json_from_text(eval_result)
-        validated = EvalOut.model_validate(payload)
+        # validated = EvalOut.model_validate(payload)
 
         # 出力先計算 & 保存
         output_path = Path(f"output/{work_id}-{agent}.json")
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_json = json.dumps(validated.model_dump(), ensure_ascii=False, indent=2)
+        output_json = json.dumps(payload, ensure_ascii=False, indent=2)
         output_path.write_text(output_json, encoding="utf-8")
         return payload
     except Exception as e:
