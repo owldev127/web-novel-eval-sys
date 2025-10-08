@@ -15,7 +15,7 @@ def main():
     args = sys.argv[1:]
     
     # Validate arguments
-    if len(args) < 3:
+    if len(args) < 4:
         result = {
             "success": False,
             "message": "Missing required parameters: source, workId, and AI model",
@@ -26,8 +26,9 @@ def main():
     agent = args[0]
     work_id = args[1]
     episodes = int(args[2]) if len(args) > 2 and args[2].isdigit() else 1
+    stage_num = args[3]
 
-    eval_result = asyncio.run(run_evaluation(agent, work_id, episodes))
+    eval_result = asyncio.run(run_evaluation(agent, work_id, episodes, stage_num))
     result = {
         "success": True,
         "message": "evaluation completed",

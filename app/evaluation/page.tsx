@@ -2,16 +2,40 @@
 
 import { useEffect, useState } from "react"
 import { MainLayout } from "@/components/layout/main-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
-import { Brain, CheckCircle, XCircle, Star, TrendingUp, AlertCircle } from "lucide-react"
+import {
+  Brain,
+  CheckCircle,
+  XCircle,
+  Star,
+  TrendingUp,
+  AlertCircle,
+} from "lucide-react"
 import { NovelData } from "../scraping/page"
-import { convertJSONToEvals, toEvalData, toNovelData, truncateVisible } from "@/lib/utils"
+import {
+  convertJSONToEvals,
+  toEvalData,
+  toNovelData,
+  truncateVisible,
+} from "@/lib/utils"
 
 export interface EvaluationResult {
   id: number
@@ -31,8 +55,16 @@ const evaluationStages = [
 const aiModels = [
   { value: "chatgpt", label: "OpenAI", description: "OpenAI の最新モデル" },
   // { value: "claude", label: "Claude 3", description: "Anthropic の高性能モデル" },
-  { value: "gemini", label: "Gemini Pro", description: "Google の多機能モデル" },
-  { value: "deepseek", label: "DeepSeek", description: "DeepSeek のマルチモーダル対応モデル" },
+  {
+    value: "gemini",
+    label: "Gemini Pro",
+    description: "Google の多機能モデル",
+  },
+  {
+    value: "deepseek",
+    label: "DeepSeek",
+    description: "DeepSeek のマルチモーダル対応モデル",
+  },
   { value: "phi", label: "Phi 4", description: "Microsoft の軽量モデル" },
   { value: "qwen", label: "Qwen 3", description: "Alibaba の大規模モデル" },
 ]
@@ -43,7 +75,9 @@ export default function EvaluationPage() {
   const [selectedStage, setSelectedStage] = useState("")
   const [selectedModel, setSelectedModel] = useState("")
   const [isEvaluating, setIsEvaluating] = useState(false)
-  const [evaluationResults, setEvaluationResults] = useState<EvaluationResult[] | null>(null)
+  const [evaluationResults, setEvaluationResults] = useState<
+    EvaluationResult[] | null
+  >(null)
   const [totalScore, setTotalScore] = useState(0)
   const [maxTotalScore, setMaxTotalScore] = useState(30)
   const [passingScore, setPassingScore] = useState(18)
@@ -60,8 +94,9 @@ export default function EvaluationPage() {
           params: {
             agent: selectedModel,
             workId: selectedNovel,
-          }
-        })
+            stageNum: selectedStage,
+          },
+        }),
       })
 
       const json = await res.json()
@@ -188,7 +223,9 @@ export default function EvaluationPage() {
               <Brain className="w-5 h-5 text-primary" />
               評価設定
             </CardTitle>
-            <CardDescription>評価する作品、段階、AIモデルを選択してください</CardDescription>
+            <CardDescription>
+              評価する作品、段階、AIモデルを選択してください
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -202,8 +239,12 @@ export default function EvaluationPage() {
                     {novels.map((novel) => (
                       <SelectItem key={novel.id} value={novel.id.toString()}>
                         <div className="flex flex-col items-start">
-                          <span className="font-medium">{truncateVisible(novel.title, 16)}</span>
-                          <span className="text-xs text-muted-foreground">{novel.author}</span>
+                          <span className="font-medium">
+                            {truncateVisible(novel.title, 16)}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {novel.author}
+                          </span>
                         </div>
                       </SelectItem>
                     ))}
@@ -221,7 +262,9 @@ export default function EvaluationPage() {
                       <SelectItem key={stage.value} value={stage.value}>
                         <div className="flex flex-col items-start">
                           <span className="font-medium">{stage.label}</span>
-                          <span className="text-xs text-muted-foreground">{stage.description}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {stage.description}
+                          </span>
                         </div>
                       </SelectItem>
                     ))}
@@ -240,7 +283,9 @@ export default function EvaluationPage() {
                     <SelectItem key={model.value} value={model.value}>
                       <div className="flex flex-col items-start">
                         <span className="font-medium">{model.label}</span>
-                        <span className="text-xs text-muted-foreground">{model.description}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {model.description}
+                        </span>
                       </div>
                     </SelectItem>
                   ))}
@@ -249,7 +294,12 @@ export default function EvaluationPage() {
             </div>
             <Button
               onClick={handleEvaluate}
-              disabled={!selectedNovel || !selectedStage || !selectedModel || isEvaluating}
+              disabled={
+                !selectedNovel ||
+                !selectedStage ||
+                !selectedModel ||
+                isEvaluating
+              }
               className="w-full md:w-auto"
             >
               {isEvaluating ? "評価中..." : "評価する"}
@@ -266,7 +316,9 @@ export default function EvaluationPage() {
                 <span className="font-medium">AI評価を実行中...</span>
               </div>
               <Progress value={66} className="mb-2" />
-              <p className="text-sm text-muted-foreground">評価項目を順次処理しています。しばらくお待ちください。</p>
+              <p className="text-sm text-muted-foreground">
+                評価項目を順次処理しています。しばらくお待ちください。
+              </p>
             </CardContent>
           </Card>
         )}
@@ -276,7 +328,11 @@ export default function EvaluationPage() {
           <div className="space-y-6">
             {/* Overall Score */}
             <Card
-              className={`border-2 ${isPassed ? "border-success/20 bg-success/5" : "border-destructive/20 bg-destructive/5"}`}
+              className={`border-2 ${
+                isPassed
+                  ? "border-success/20 bg-success/5"
+                  : "border-destructive/20 bg-destructive/5"
+              }`}
             >
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -288,7 +344,10 @@ export default function EvaluationPage() {
                     )}
                     評価結果
                   </div>
-                  <Badge variant={isPassed ? "default" : "destructive"} className="text-lg px-3 py-1">
+                  <Badge
+                    variant={isPassed ? "default" : "destructive"}
+                    className="text-lg px-3 py-1"
+                  >
                     {isPassed ? "合格" : "不合格"}
                   </Badge>
                 </CardTitle>
@@ -296,23 +355,38 @@ export default function EvaluationPage() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center space-y-2">
-                    <div className="text-3xl font-bold text-primary">{totalScore}</div>
-                    <div className="text-sm text-muted-foreground">総合スコア</div>
+                    <div className="text-3xl font-bold text-primary">
+                      {totalScore}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      総合スコア
+                    </div>
                   </div>
                   <div className="text-center space-y-2">
-                    <div className="text-3xl font-bold text-muted-foreground">{maxTotalScore}</div>
+                    <div className="text-3xl font-bold text-muted-foreground">
+                      {maxTotalScore}
+                    </div>
                     <div className="text-sm text-muted-foreground">満点</div>
                   </div>
                   <div className="text-center space-y-2">
-                    <div className="text-3xl font-bold text-warning">{passingScore}</div>
-                    <div className="text-sm text-muted-foreground">合格ライン</div>
+                    <div className="text-3xl font-bold text-warning">
+                      {passingScore}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      合格ライン
+                    </div>
                   </div>
                 </div>
                 <div className="mt-4">
-                  <Progress value={(totalScore / maxTotalScore) * 100} className="h-3" />
+                  <Progress
+                    value={(totalScore / maxTotalScore) * 100}
+                    className="h-3"
+                  />
                   <div className="flex justify-between text-xs text-muted-foreground mt-1">
                     <span>0</span>
-                    <span className="text-warning">合格ライン: {passingScore}</span>
+                    <span className="text-warning">
+                      合格ライン: {passingScore}
+                    </span>
                     <span>{maxTotalScore}</span>
                   </div>
                 </div>
@@ -335,7 +409,9 @@ export default function EvaluationPage() {
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between gap-4 mb-3">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-lg mb-1">{result.name}</h3>
+                            <h3 className="font-semibold text-lg mb-1">
+                              {result.name}
+                            </h3>
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <TrendingUp className="w-3 h-3" />
@@ -347,20 +423,32 @@ export default function EvaluationPage() {
                               </span>
                             </div>
                           </div>
-                          <Badge variant={getScoreBadgeVariant(result.score, result.maxScore)}>
+                          <Badge
+                            variant={getScoreBadgeVariant(
+                              result.score,
+                              result.maxScore
+                            )}
+                          >
                             {result.score}/{result.maxScore}
                           </Badge>
                         </div>
                         <div className="mb-3">
-                          <Progress value={(result.score / result.maxScore) * 100} className="h-2" />
+                          <Progress
+                            value={(result.score / result.maxScore) * 100}
+                            className="h-2"
+                          />
                         </div>
                         <div className="flex items-start gap-2">
                           <AlertCircle className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-muted-foreground leading-relaxed">{result.reason}</p>
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            {result.reason}
+                          </p>
                         </div>
                       </CardContent>
                     </Card>
-                    {index < evaluationResults.length - 1 && <Separator className="my-4" />}
+                    {index < evaluationResults.length - 1 && (
+                      <Separator className="my-4" />
+                    )}
                   </div>
                 ))}
               </CardContent>
@@ -368,10 +456,16 @@ export default function EvaluationPage() {
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-              <Button onClick={handleSaveResults} className="flex-1 md:flex-none">
+              <Button
+                onClick={handleSaveResults}
+                className="flex-1 md:flex-none"
+              >
                 結果を保存
               </Button>
-              <Button variant="outline" onClick={() => setEvaluationResults(null)}>
+              <Button
+                variant="outline"
+                onClick={() => setEvaluationResults(null)}
+              >
                 新しい評価
               </Button>
             </div>

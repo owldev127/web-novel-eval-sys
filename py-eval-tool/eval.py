@@ -408,7 +408,7 @@ def run_scraper_if_needed(agent: str, scraper: str, work_id: str, episodes: int)
             return None
 
 
-async def run_evaluation(agent: str, work_id: str, episodes: int) -> dict:
+async def run_evaluation(agent: str, work_id: str, episodes: int, stage_num:str) -> dict:
     base_dir = Path(__file__).resolve().parent.parent
     work_file = Path(f'{base_dir}/storage/works/{work_id}.json')
     if not work_file.exists():
