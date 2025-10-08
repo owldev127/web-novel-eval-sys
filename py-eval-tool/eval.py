@@ -419,12 +419,39 @@ async def run_evaluation(agent: str, work_id: str, episodes: int, stage_num:str)
     novel_json = json.loads(Path(work_file).read_text(encoding="utf-8"))
     novel_json_str = json.dumps(novel_json, ensure_ascii=False, indent=2)
 
+    # Read settings.json and filter by stage_num
+    settings_file = Path(f'{base_dir}/storage/settings/settings.json')
+    settings_json = json.loads(Path(settings_file).read_text(encoding="utf-8"))
+    
+    # Find the stage data
+    stage_data = None
+    for stage in settings_json:
+        if stage.get('stage') == stage_num:
+            stage_data = stage
+            break
+    # --- build the dynamic criteria description ---
+    criteria_lines = []
+    for c in stage_data.get('criteria', []):
+        part = f"""- 評価基準{c['id']}
+    評価名前： "{c['name']}",
+    内容：" {c['prompt']}"
+    最小スコア:{c['minScore']}
+    最大スコア:{c['maxScore']}"""
+        criteria_lines.append(part)
+
+    criteria_text = "\n\n".join(criteria_lines)
+
+    # --- build dynamic "scores" JSON keys ---
+    scores_lines = [f'    "criteria{c["id"]}": 数値 (評価基準{c['id']}についての評価)' for c in stage_data.get('criteria', [])]
+    scores_text = ",\n".join(scores_lines)
+
 
     try:
         if agent == ANTHROPIC or agent == QWEN:
             eval_result = "" # await run_claude(work_file, agent)
         else:
-            prompt = prompts.EVAL_NOVEL_USER_PROMPT.replace("{novel_json}", novel_json_str)
+            # prompt = prompts.EVAL_NOVEL_USER_PROMPT.replace("{novel_json}", novel_json_str)
+            prompt = prompts.UPDATED_EVAL_NOVEL_USER_PROMPT.replace("{novel_json}", novel_json_str).replace("{criteria_text}", criteria_text).replace("{scores_text}", scores_text)
             messages = [{"role": "user", "content": prompt}]
             eval_result = await LLMAgent(agent).call(messages)    
         payload = extract_json_from_text(eval_result)

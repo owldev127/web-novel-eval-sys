@@ -34,6 +34,35 @@ EVAL_NOVEL_USER_PROMPT = """あなたはライトノベル編集者です。
 {novel_json}
 """
 
+UPDATED_EVAL_NOVEL_USER_PROMPT = """あなたはライトノベル編集者です。
+
+以下のJSON形式の小説データを読み込み、章ごとに要約したうえで、作品全体を評価してください。  
+
+### 評価基準（1〜10点）
+
+出力スコアは、最小スコアと最大スコアの間の値にすることができます。
+
+{criteria_text}
+
+### 出力フォーマット (⚠️ **出力は必ずJSON形式のみで行い、説明文や補足などJSON以外の文字列を絶対に含めないこと。**）
+
+{{
+  "title": "",
+  "overall_score": 数値（100点満点換算）,
+  "scores": {{
+{scores_text}
+  }},
+  "comments": {{
+    "strengths": ["強み1", "強み2", "強み3"],
+    "weaknesses": ["改善点1", "改善点2", "改善点3"]
+  }},
+  "final_summary": "小説全体の総合的な講評をここに記述する"
+}}
+
+### 小説データ
+
+{{novel_json}}
+"""
 
 EVAL_SUB_NOVEL_USER_PROMPT = """あなたはライトノベル編集者です。
 
