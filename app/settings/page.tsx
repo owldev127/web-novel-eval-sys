@@ -1,8 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { MainLayout } from "@/components/layout/main-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -120,11 +126,35 @@ const initialSettings: StageSettings[] = [
 ]
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<StageSettings[]>(initialSettings)
+  const [settings, setSettings] = useState<StageSettings[]>([])
   const [activeStage, setActiveStage] = useState("first")
   const [editingCriteria, setEditingCriteria] = useState<number | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
 
   const currentStageSettings = settings.find((s) => s.stage === activeStage)!
+
+  // Load settings on component mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch("/api/settings")
+        const result = await response.json()
+
+        if (result.success && result.data.length > 0) {
+          setSettings(result.data)
+        }
+        // If no settings found, keep using initialSettings
+      } catch (error) {
+        console.error("Failed to load settings:", error)
+        // Keep using initialSettings as fallback
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadSettings()
+  }, [])
 
   const addCriteria = () => {
     const newCriteria: EvaluationCriteria = {
@@ -143,29 +173,37 @@ export default function SettingsPage() {
               criteria: [...stage.criteria, newCriteria],
               totalMaxScore: stage.totalMaxScore + 10,
             }
-          : stage,
-      ),
+          : stage
+      )
     )
     setEditingCriteria(newCriteria.id)
   }
 
-  const updateCriteria = (criteriaId: number, field: keyof EvaluationCriteria, value: string | number) => {
+  const updateCriteria = (
+    criteriaId: number,
+    field: keyof EvaluationCriteria,
+    value: string | number
+  ) => {
     setSettings((prev) =>
       prev.map((stage) =>
         stage.stage === activeStage
           ? {
               ...stage,
               criteria: stage.criteria.map((criteria) =>
-                criteria.id === criteriaId ? { ...criteria, [field]: value } : criteria,
+                criteria.id === criteriaId
+                  ? { ...criteria, [field]: value }
+                  : criteria
               ),
             }
-          : stage,
-      ),
+          : stage
+      )
     )
   }
 
   const deleteCriteria = (criteriaId: number) => {
-    const criteriaToDelete = currentStageSettings.criteria.find((c) => c.id === criteriaId)
+    const criteriaToDelete = currentStageSettings.criteria.find(
+      (c) => c.id === criteriaId
+    )
     if (!criteriaToDelete) return
 
     setSettings((prev) =>
@@ -176,21 +214,65 @@ export default function SettingsPage() {
               criteria: stage.criteria.filter((c) => c.id !== criteriaId),
               totalMaxScore: stage.totalMaxScore - criteriaToDelete.maxScore,
             }
-          : stage,
-      ),
+          : stage
+      )
     )
   }
 
   const updatePassingScore = (score: number) => {
     setSettings((prev) =>
-      prev.map((stage) => (stage.stage === activeStage ? { ...stage, passingScore: score } : stage)),
+      prev.map((stage) =>
+        stage.stage === activeStage ? { ...stage, passingScore: score } : stage
+      )
     )
   }
 
-  const saveSettings = () => {
-    // Simulate saving to database
-    alert("設定を保存しました！")
-    setEditingCriteria(null)
+  const saveSettings = async () => {
+    setSaving(true)
+    try {
+      const response = await fetch("/api/settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ settings }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        alert("設定を保存しました！")
+        setEditingCriteria(null)
+      } else {
+        alert("設定の保存に失敗しました。")
+      }
+    } catch (error) {
+      console.error("Failed to save settings:", error)
+      alert("設定の保存に失敗しました。")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-balance">評価設定</h1>
+            <p className="text-muted-foreground text-pretty">
+              設定を読み込み中...
+            </p>
+          </div>
+          <div className="flex items-center justify-center p-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">読み込み中...</p>
+            </div>
+          </div>
+        </div>
+      </MainLayout>
+    )
   }
 
   return (
@@ -199,7 +281,9 @@ export default function SettingsPage() {
         {/* Header */}
         <div className="space-y-2">
           <h1 className="text-3xl font-bold text-balance">評価設定</h1>
-          <p className="text-muted-foreground text-pretty">段階ごとの評価項目とプロンプトを設定・管理します。</p>
+          <p className="text-muted-foreground text-pretty">
+            段階ごとの評価項目とプロンプトを設定・管理します。
+          </p>
         </div>
 
         {/* Stage Tabs */}
@@ -209,21 +293,33 @@ export default function SettingsPage() {
               <Settings className="w-5 h-5 text-primary" />
               評価段階設定
             </CardTitle>
-            <CardDescription>各段階の評価項目を設定してください</CardDescription>
+            <CardDescription>
+              各段階の評価項目を設定してください
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs value={activeStage} onValueChange={setActiveStage}>
               <TabsList className="grid w-full grid-cols-3">
                 {settings.map((stage) => (
-                  <TabsTrigger key={stage.stage} value={stage.stage} className="flex flex-col gap-1">
+                  <TabsTrigger
+                    key={stage.stage}
+                    value={stage.stage}
+                    className="flex flex-col gap-1"
+                  >
                     <span className="font-medium">{stage.label}</span>
-                    <span className="text-xs text-muted-foreground">{stage.criteria.length}項目</span>
+                    <span className="text-xs text-muted-foreground">
+                      {stage.criteria.length}項目
+                    </span>
                   </TabsTrigger>
                 ))}
               </TabsList>
 
               {settings.map((stageSettings) => (
-                <TabsContent key={stageSettings.stage} value={stageSettings.stage} className="space-y-6 mt-6">
+                <TabsContent
+                  key={stageSettings.stage}
+                  value={stageSettings.stage}
+                  className="space-y-6 mt-6"
+                >
                   {/* Passing Score Setting */}
                   <Card className="border-primary/20 bg-primary/5">
                     <CardContent className="p-4">
@@ -241,12 +337,16 @@ export default function SettingsPage() {
                           <Input
                             type="number"
                             value={stageSettings.passingScore}
-                            onChange={(e) => updatePassingScore(Number(e.target.value))}
+                            onChange={(e) =>
+                              updatePassingScore(Number(e.target.value))
+                            }
                             className="w-20 text-center"
                             min={1}
                             max={stageSettings.totalMaxScore}
                           />
-                          <span className="text-sm text-muted-foreground">点</span>
+                          <span className="text-sm text-muted-foreground">
+                            点
+                          </span>
                         </div>
                       </div>
                     </CardContent>
@@ -263,7 +363,10 @@ export default function SettingsPage() {
                     </div>
 
                     {stageSettings.criteria.map((criteria, index) => (
-                      <Card key={criteria.id} className="border-l-4 border-l-primary/30">
+                      <Card
+                        key={criteria.id}
+                        className="border-l-4 border-l-primary/30"
+                      >
                         <CardContent className="p-4">
                           <div className="space-y-4">
                             <div className="flex items-start justify-between gap-4">
@@ -275,12 +378,20 @@ export default function SettingsPage() {
                                   {editingCriteria === criteria.id ? (
                                     <Input
                                       value={criteria.name}
-                                      onChange={(e) => updateCriteria(criteria.id, "name", e.target.value)}
+                                      onChange={(e) =>
+                                        updateCriteria(
+                                          criteria.id,
+                                          "name",
+                                          e.target.value
+                                        )
+                                      }
                                       className="font-semibold"
                                       placeholder="評価項目名"
                                     />
                                   ) : (
-                                    <h4 className="font-semibold text-lg">{criteria.name}</h4>
+                                    <h4 className="font-semibold text-lg">
+                                      {criteria.name}
+                                    </h4>
                                   )}
                                 </div>
                               </div>
@@ -289,7 +400,11 @@ export default function SettingsPage() {
                                   variant="ghost"
                                   size="sm"
                                   onClick={() =>
-                                    setEditingCriteria(editingCriteria === criteria.id ? null : criteria.id)
+                                    setEditingCriteria(
+                                      editingCriteria === criteria.id
+                                        ? null
+                                        : criteria.id
+                                    )
                                   }
                                 >
                                   <Edit3 className="w-4 h-4" />
@@ -307,11 +422,19 @@ export default function SettingsPage() {
 
                             <div className="space-y-3">
                               <div>
-                                <Label className="text-sm font-medium">プロンプト</Label>
+                                <Label className="text-sm font-medium">
+                                  プロンプト
+                                </Label>
                                 {editingCriteria === criteria.id ? (
                                   <Textarea
                                     value={criteria.prompt}
-                                    onChange={(e) => updateCriteria(criteria.id, "prompt", e.target.value)}
+                                    onChange={(e) =>
+                                      updateCriteria(
+                                        criteria.id,
+                                        "prompt",
+                                        e.target.value
+                                      )
+                                    }
                                     className="mt-1 min-h-[100px]"
                                     placeholder="AIへの評価指示を詳細に記述してください..."
                                   />
@@ -324,12 +447,20 @@ export default function SettingsPage() {
 
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                  <Label className="text-sm font-medium">最小スコア</Label>
+                                  <Label className="text-sm font-medium">
+                                    最小スコア
+                                  </Label>
                                   {editingCriteria === criteria.id ? (
                                     <Input
                                       type="number"
                                       value={criteria.minScore}
-                                      onChange={(e) => updateCriteria(criteria.id, "minScore", Number(e.target.value))}
+                                      onChange={(e) =>
+                                        updateCriteria(
+                                          criteria.id,
+                                          "minScore",
+                                          Number(e.target.value)
+                                        )
+                                      }
                                       className="mt-1"
                                       min={1}
                                     />
@@ -340,12 +471,20 @@ export default function SettingsPage() {
                                   )}
                                 </div>
                                 <div>
-                                  <Label className="text-sm font-medium">最大スコア</Label>
+                                  <Label className="text-sm font-medium">
+                                    最大スコア
+                                  </Label>
                                   {editingCriteria === criteria.id ? (
                                     <Input
                                       type="number"
                                       value={criteria.maxScore}
-                                      onChange={(e) => updateCriteria(criteria.id, "maxScore", Number(e.target.value))}
+                                      onChange={(e) =>
+                                        updateCriteria(
+                                          criteria.id,
+                                          "maxScore",
+                                          Number(e.target.value)
+                                        )
+                                      }
                                       className="mt-1"
                                       min={criteria.minScore}
                                     />
@@ -367,7 +506,9 @@ export default function SettingsPage() {
                         <CardContent className="p-8 text-center">
                           <div className="space-y-3">
                             <Settings className="w-12 h-12 text-muted-foreground mx-auto" />
-                            <h3 className="text-lg font-medium text-muted-foreground">評価項目がありません</h3>
+                            <h3 className="text-lg font-medium text-muted-foreground">
+                              評価項目がありません
+                            </h3>
                             <p className="text-sm text-muted-foreground">
                               「項目を追加」ボタンから評価項目を追加してください
                             </p>
@@ -384,16 +525,28 @@ export default function SettingsPage() {
                     <CardContent className="p-4">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                         <div>
-                          <div className="text-2xl font-bold text-primary">{stageSettings.criteria.length}</div>
-                          <div className="text-sm text-muted-foreground">評価項目数</div>
+                          <div className="text-2xl font-bold text-primary">
+                            {stageSettings.criteria.length}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            評価項目数
+                          </div>
                         </div>
                         <div>
-                          <div className="text-2xl font-bold text-primary">{stageSettings.totalMaxScore}</div>
-                          <div className="text-sm text-muted-foreground">満点</div>
+                          <div className="text-2xl font-bold text-primary">
+                            {stageSettings.totalMaxScore}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            満点
+                          </div>
                         </div>
                         <div>
-                          <div className="text-2xl font-bold text-warning">{stageSettings.passingScore}</div>
-                          <div className="text-sm text-muted-foreground">合格ライン</div>
+                          <div className="text-2xl font-bold text-warning">
+                            {stageSettings.passingScore}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            合格ライン
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -406,9 +559,9 @@ export default function SettingsPage() {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <Button onClick={saveSettings} className="gap-2">
+          <Button onClick={saveSettings} disabled={saving} className="gap-2">
             <Save className="w-4 h-4" />
-            設定を保存
+            {saving ? "保存中..." : "設定を保存"}
           </Button>
         </div>
       </div>
