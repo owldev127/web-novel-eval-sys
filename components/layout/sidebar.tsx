@@ -6,7 +6,15 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { FileText, Brain, Settings, List, Menu, X } from "lucide-react"
+import {
+  FileText,
+  Brain,
+  Settings,
+  List,
+  Menu,
+  X,
+  Download,
+} from "lucide-react"
 
 const navigation = [
   {
@@ -33,6 +41,12 @@ const navigation = [
     icon: List,
     description: "評価結果の一覧",
   },
+  {
+    name: "画像ダウンロード",
+    href: "/download",
+    icon: Download,
+    description: "サイトのスクリーンショット取得",
+  },
 ]
 
 export function Sidebar() {
@@ -50,7 +64,9 @@ export function Sidebar() {
             </div>
             {!isCollapsed && (
               <div>
-                <h1 className="text-lg font-semibold text-sidebar-foreground">Novel AI</h1>
+                <h1 className="text-lg font-semibold text-sidebar-foreground">
+                  Novel AI
+                </h1>
                 <p className="text-xs text-muted-foreground">評価システム</p>
               </div>
             )}
@@ -61,7 +77,11 @@ export function Sidebar() {
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="text-sidebar-foreground hover:bg-sidebar-accent"
           >
-            {isCollapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
+            {isCollapsed ? (
+              <Menu className="w-4 h-4" />
+            ) : (
+              <X className="w-4 h-4" />
+            )}
           </Button>
         </div>
 
@@ -77,14 +97,16 @@ export function Sidebar() {
                     "w-full justify-start gap-3 h-12",
                     isActive
                       ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
                 >
                   <item.icon className="w-5 h-5 flex-shrink-0" />
                   {!isCollapsed && (
                     <div className="flex flex-col items-start">
                       <span className="text-sm font-medium">{item.name}</span>
-                      <span className="text-xs opacity-70">{item.description}</span>
+                      <span className="text-xs opacity-70">
+                        {item.description}
+                      </span>
                     </div>
                   )}
                 </Button>
@@ -95,7 +117,9 @@ export function Sidebar() {
 
         {/* Footer */}
         <div className="p-4 border-t border-sidebar-border">
-          <div className="text-xs text-muted-foreground text-center">Novel Evaluation System v1.0</div>
+          <div className="text-xs text-muted-foreground text-center">
+            Novel Evaluation System v1.0
+          </div>
         </div>
       </div>
     </Card>
